@@ -1,7 +1,6 @@
 name: Stips Notifications Checker
 on:
   schedule:
-    - cron: '* * * * *'  # Runs every minute
   workflow_dispatch:
 
 jobs:
