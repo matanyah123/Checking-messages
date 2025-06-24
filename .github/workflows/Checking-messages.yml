@@ -10,25 +10,56 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check for new messages
+      - name: Checkout (needed for cache key)
+        uses: actions/checkout@v4
+
+      - name: Load Previous Count
+        id: cache-count
+        uses: actions/cache@v4
+        with:
+          path: last_count.txt
+          key: stips-count
+
+      - name: Initialize Count File if Missing
         run: |
-          # Make API request with your cookies
+          if [ ! -f last_count.txt ]; then
+            echo "0 0" > last_count.txt
+          fi
+
+      - name: Read Previous Counts
+        id: read-count
+        run: |
+          read last_messages last_notifications < last_count.txt
+          echo "last_messages=$last_messages" >> $GITHUB_ENV
+          echo "last_notifications=$last_notifications" >> $GITHUB_ENV
+
+      - name: Make API Request
+        run: |
           response=$(curl -s 'https://stips.co.il/api?name=messages.count&api_params=%7B%7D' \
             -H 'Cookie: _ga=GA1.3.547378152.1726079580; __gsas=ID=1ebb46c307983df9:T=1727190456:RT=1727190456:S=ALNI_MagehX6oaoLZg97y7ikR-c9mGR5Hw; Login%5FUser=hashedpassword=EDHJFsGEEKrrpsFHqKprDIoGDIsLIprs&mail=zn6n0Bnu%2ExL%40tznvy%2Ep1z&rememberme=true&stype=75r4&id=GHEFLG&password=; _gid=GA1.3.1310715032.1730917325; ASPSESSIONIDCERASRCS=KMLNGBEBJPEDBECPHEGEBDAJ; _gat=1; ASPSESSIONIDAETDSRAS=EPFFHLACJMDIICIFJNCHFGKM; _ga_LYRZGGS0YG=GS1.3.1730981977.69.0.1730981977.0.0.0')
 
-          # Extract counts
           messages_count=$(echo "$response" | jq '.data.messagesCount')
           notifications_count=$(echo "$response" | jq '.data.notificationsCount')
 
-          echo "Messages: $messages_count, Notifications: $notifications_count"
+          echo "Current: $messages_count messages, $notifications_count notifications"
+          echo "Previous: $last_messages messages, $last_notifications notifications"
 
-          # Check if we need to send a notification
-          if [ "$messages_count" -ne 0 ] || [ "$notifications_count" -ne 0 ]; then
-            message="🔥 Hey cutie! You have $messages_count new messages and $notifications_count new notifications waiting for you on Stips! 💌✨"
+          if [ "$messages_count" -gt "$last_messages" ] || [ "$notifications_count" -gt "$last_notifications" ] || [ "$messages_count" -lt "$last_messages" ] || [ "$notifications_count" -lt "$last_notifications" ]; then
+            echo "🔥 Hey cutie! You have $messages_count new messages and $notifications_count new notifications waiting for you on Stips! 💌✨" > message.txt
 
             curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-              -d text="$message"
+              -d text="🔥 Hey cutie! You have $messages_count new messages and $notifications_count new notifications waiting for you on Stips! 💌✨"
+
+            # Save new counts to the file
+            echo "$messages_count $notifications_count" > last_count.txt
           else
-            echo "No new messages or notifications 💭"
+            echo "No update, no need to message 💭"
           fi
+
+      - name: Update Cache
+        if: always()
+        uses: actions/cache@v4
+        with:
+          path: last_count.txt
+          key: stips-count
