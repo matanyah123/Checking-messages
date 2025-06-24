@@ -26,7 +26,7 @@ jobs:
           if [ "$messages_count" -ne 0 ] || [ "$notifications_count" -ne 0 ]; then
             message="🔥 Hey cutie! You have $messages_count new messages and $notifications_count new notifications waiting for you on Stips! 💌✨"
 
-            curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            curl -s -X POST "https://api.telegram.org/bot${{ secrets.7836176276:AAHOL6zRBDaE4384IMdBlTJ-neRRf3sJewo }}/sendMessage" \
               -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
               -d text="$message"
           else
