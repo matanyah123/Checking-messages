@@ -1,6 +1,5 @@
 name: Stips Notifications Checker
 on:
-  schedule:
   workflow_dispatch:
 
 jobs:
