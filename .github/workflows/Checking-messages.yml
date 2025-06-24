@@ -27,7 +27,7 @@ jobs:
             message="🔥 Hey cutie! You have $messages_count new messages and $notifications_count new notifications waiting for you on Stips! 💌✨"
 
             curl -s -X POST "https://api.telegram.org/bot${{ secrets.7836176276:AAHOL6zRBDaE4384IMdBlTJ-neRRf3sJewo }}/sendMessage" \
-              -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+              -d chat_id=${{ secrets.1569384656 }} \
               -d text="$message"
           else
             echo "No new messages or notifications 💭"
