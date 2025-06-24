@@ -3,7 +3,7 @@ name: Stips Notifications Checker
 on:
   schedule:
     - cron: '* * * * *' # Runs every minute
-  workflow_dispatch: # Optional: manual trigger
+  workflow_dispatch:
 
 jobs:
   check_stips:
@@ -44,17 +44,30 @@ jobs:
           echo "Current: $messages_count messages, $notifications_count notifications"
           echo "Previous: $last_messages messages, $last_notifications notifications"
 
-          if [ "$messages_count" -gt "$last_messages" ] || [ "$notifications_count" -gt "$last_notifications" ] || [ "$messages_count" -lt "$last_messages" ] || [ "$notifications_count" -lt "$last_notifications" ]; then
-            echo "🔥 Hey cutie! You have $messages_count new messages and $notifications_count new notifications waiting for you on Stips! 💌✨" > message.txt
+          message=""
 
+          if [ "$messages_count" -ne "$last_messages" ] && [ "$messages_count" -ne 0 ]; then
+            message="📨 You have $messages_count new messages!"
+          fi
+
+          if [ "$notifications_count" -ne "$last_notifications" ] && [ "$notifications_count" -ne 0 ]; then
+            if [ -n "$message" ]; then
+              message="$message\n🔔 You have $notifications_count new notifications!"
+            else
+              message="🔔 You have $notifications_count new notifications!"
+            fi
+          fi
+
+          if [ -n "$message" ]; then
+            echo -e "Sending message:\n$message"
             curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
               -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-              -d text="🔥 Hey cutie! You have $messages_count new messages and $notifications_count new notifications waiting for you on Stips! 💌✨"
+              -d text="$message"
 
-            # Save new counts to the file
+            # Save new counts to file
             echo "$messages_count $notifications_count" > last_count.txt
           else
-            echo "No update, no need to message 💭"
+            echo "No relevant changes 💭"
           fi
 
       - name: Update Cache
