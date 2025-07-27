@@ -36,7 +36,7 @@ jobs:
         run: |
           echo "Making API request..."
           response=$(curl -s 'https://stips.co.il/api?name=messages.count&api_params=%7B%7D' \
-            -H 'Cookie: _ga=GA1.3.547378152.1726079580; _ga_LYRZGGS0YG=GS1.3.1730981977.69.0.1730981977.0.0.0; _gid=GA1.3.1310715032.1730917325; ASPSESSIONIDCERASRCS=KMLNGBEBJPEDBECPHEGEBDAJ; _gat=1; ASPSESSIONIDAETDSRAS=EPFFHLACJMDIICIFJNCHFGKM; Login_User=hashedpassword=EDHJFsGEEKrrpsFHqKprDIoGDIsLIprs&mail=zn6n0Bnu%2ExL%40tznvy%2Ep1z&rememberme=true&stype=75r4&id=GHEFLG&password=;' \
+            -H 'Cookie: _ga=GA1.3.1498739666.1750545609; _ga_LYRZGGS0YG=GS2.3.s1753218078$o77$g1$t1753218082$j56$l0$h0; _gid=GA1.3.1409403933.1753617216; ASPSESSIONIDCCRBCSSR=FKEOKMKCPKFECBMCJKPDONIP; Login%5FUser=hashedpassword=InIpnMnFpFGHFqFrGnppFKMsqFGMoprq&mail=zn6n0Bnu%2ExL%40tznvy%2Ep1z&rememberme=true&stype=75r4&id=GHEFLG&password=DEEKJD' \
             -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
           
           echo "API Response: $response"
